@@ -16,8 +16,8 @@ class CategoryManagerTests: XCTestCase {
         let promise = XCTestExpectation(description: "Fetch Category Success")
 
         categoryManager.fetchCategory(of: .main) { category in
-            XCTAssertEqual(category.type, .main)
-            XCTAssertTrue(category.product.count > 0)
+            XCTAssertEqual(category?.type, .main)
+            XCTAssertNotNil(category?.product)
             promise.fulfill()
         }
 
@@ -32,7 +32,7 @@ class CategoryManagerTests: XCTestCase {
         let fetchProductPromise = XCTestExpectation(description: "Fetch Product Success")
 
         categoryManager.fetchCategory(of: .main) { category in
-            testProduct = category.product[0]
+            testProduct = category?.product[0]
             fetchProductPromise.fulfill()
         }
 

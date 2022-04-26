@@ -20,14 +20,9 @@ class NetworkManagerTests: XCTestCase {
     func testFetchProducts() throws {
         let promise = XCTestExpectation(description: "Fetch products success")
 
-        networkManager.fetchProducts(of: ProductType.main) { result in
-            switch result {
-            case .success(let products):
-                SystemLog.info(products.debugDescription)
-                promise.fulfill()
-            case .failure(let error):
-                SystemLog.fault(error.localizedDescription)
-            }
+        networkManager.fetchProducts(of: ProductType.main) { products in
+            XCTAssertNotNil(products)
+            promise.fulfill()
         }
 
         wait(for: [promise], timeout: 1)
@@ -52,15 +47,9 @@ class NetworkManagerTests: XCTestCase {
         components.path += "\(fileName).\(fileExtension)"
         guard let url = components.url else { return }
 
-        networkManager.fetchImageData(url: url) { result in
-            switch result {
-            case .success(let data):
-                XCTAssertEqual(localImageData, data)
-                promise.fulfill()
-            case .failure(let error):
-                SystemLog.fault(error.localizedDescription)
-                XCTFail()
-            }
+        networkManager.fetchImageData(url: url) { data in
+            XCTAssertEqual(localImageData, data)
+            promise.fulfill()
         }
 
         wait(for: [promise], timeout: 2)

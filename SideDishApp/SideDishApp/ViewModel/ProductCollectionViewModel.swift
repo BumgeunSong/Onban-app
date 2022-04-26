@@ -47,6 +47,10 @@ struct ProductCollectionViewModel {
             dispatchGroup.enter()
 
             categoryManager.fetchCategory(of: type) { category in
+                guard let category = category else {
+                    return
+                }
+
                 let productCellVMs = category.product.compactMap { product in
                     ProductCellViewModel(product: product)
                 }

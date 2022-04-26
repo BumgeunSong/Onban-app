@@ -10,44 +10,47 @@ import Alamofire
 
 struct NetworkManager {
 
-    func fetchProducts(of type: ProductType, completion: @escaping (Result<[Product], NetworkError>) -> Void) {
+    func fetchProducts(of type: ProductType, completion: @escaping ([Product]?) -> Void) {
 
-        do {
-            let url = try makeCategoryURL(of: type)
+        guard let url = makeCategoryURL(of: type) else { return completion(nil) }
 
-            AF.request(url).validate().responseDecodable(of: Response.self) { AFResponse in
-                guard let products = AFResponse.value?.body else {
-                    return completion(.failure(.noData))
-                }
-                completion(.success(products))
+        AF.request(url).validate().responseDecodable(of: Response.self) { response in
+            switch response.result {
+            case .success(let response):
+                return completion(response.body)
+            case .failure(let error):
+                SystemLog.fault(error.localizedDescription)
+                return completion(nil)
             }
-        } catch {
-            SystemLog.fault(error.localizedDescription)
         }
     }
 
-    private func makeCategoryURL(of type: ProductType) throws -> URL {
+    private func makeCategoryURL(of type: ProductType) -> URL? {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "api.codesquad.kr"
         components.path = "/onban/\(type)"
 
         guard let url = components.url else {
-            throw NetworkError.wrongEndPoint
+            SystemLog.fault(NetworkError.wrongEndPoint.localizedDescription)
+            return nil
         }
 
         return url
     }
 
-    func fetchImageData(url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) {
+    func fetchImageData(url: URL, completion: @escaping (Data?) -> Void) {
 
         guard let url = changeSchemeToHTTPS(url) else { return }
 
         AF.request(url).validate().responseData { response in
-            guard let data = response.data else {
-                return completion(.failure(.noData))
+            switch response.result {
+            case .success(let data):
+                return completion(data)
+            case .failure(let error):
+                SystemLog.fault(error.localizedDescription)
+                return completion(nil)
             }
-            completion(.success(data))
         }
     }
 
@@ -57,5 +60,28 @@ struct NetworkManager {
         components.scheme = "https"
 
         return components.url
+    }
+
+    func fetchDetail(of hash: String, completion: @escaping (ProductDetail?) -> Void) {
+
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "api.codesquad.kr"
+        components.path = "/onban/detail/\(hash)"
+
+        guard let url = components.url else {
+            SystemLog.fault(NetworkError.wrongEndPoint.localizedDescription)
+            return completion(nil)
+        }
+
+        AF.request(url).validate().responseDecodable(of: ProductDetail.self) { response in
+            switch response.result {
+            case .success(let productDetail):
+                completion(productDetail)
+            case .failure(let error):
+                SystemLog.fault(error.localizedDescription)
+                completion(nil)
+            }
+        }
     }
 }
