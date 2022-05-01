@@ -20,6 +20,7 @@ struct MainCollectionViewModel {
     private var imageCache = NSCache<NSURL, NSData>()
     var categoryVMs: [CategoryType: Observable<CategorySectionViewModel>]
     var headerVMs: [CategoryType: Observable<HeaderInfoViewModel>]
+    let semaphore = DispatchSemaphore(value: 0)
 
     init () {
         let placeHolders = (0..<5).map({ _ in
@@ -28,12 +29,12 @@ struct MainCollectionViewModel {
         let placeHolderCategory =  CategorySectionViewModel(type: .main, productVMs: placeHolders)
 
         categoryVMs = [.main: Observable<CategorySectionViewModel>(placeHolderCategory),
-                         .side: Observable<CategorySectionViewModel>(),
-                        .soup: Observable<CategorySectionViewModel>()]
+                       .side: Observable<CategorySectionViewModel>(),
+                       .soup: Observable<CategorySectionViewModel>()]
 
         headerVMs = [.main: Observable<HeaderInfoViewModel>(HeaderInfoViewModel()),
-                         .side: Observable<HeaderInfoViewModel>(HeaderInfoViewModel()),
-                        .soup: Observable<HeaderInfoViewModel>(HeaderInfoViewModel())]
+                     .side: Observable<HeaderInfoViewModel>(HeaderInfoViewModel()),
+                     .soup: Observable<HeaderInfoViewModel>(HeaderInfoViewModel())]
 
     }
 
@@ -71,7 +72,9 @@ struct MainCollectionViewModel {
             }) else { return }
 
             let categoryVM = CategorySectionViewModel(type: type, productVMs: productCellVMs)
+
             categoryVMs[type]?.value = categoryVM
+            semaphore.signal()
         }
     }
 

@@ -46,11 +46,10 @@ class MainViewController: UIViewController {
     private func bindViewModel() {
         CategoryType.allCases.forEach({ type in
             guard let categoryVM = viewModel.categoryVMs[type] else {return}
-                categoryVM.bind { _ in
-                    DispatchQueue.main.async {
-                        // TODO: Reload Section 에서 invalid update 경고가 나서 reloadData() 로 일단 구현함.
-                        self.mainCollectionView.reloadData()
-                    }
+            categoryVM.bind { _ in
+                // Notice: Alamofire runs response handler in main thread.
+                // As a result, we don't have to send reload to dispatchQueue.
+                self.mainCollectionView.reloadSections(IndexSet(integer: type.index))
             }
         })
         viewModel.fetchAllCategories()

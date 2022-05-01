@@ -38,6 +38,8 @@ extension APIRequestable {
 extension APIRequestable {
     // execute 로직은 현재 모든 구체 타입에서 동일하므로 default로 구현
     func execute(completion: @escaping (Response?) -> Void) {
+        // Notice: Alamofire runs response handler in main thread.
+
         self.buildRequest()
             .validate()
             .responseData { response in
