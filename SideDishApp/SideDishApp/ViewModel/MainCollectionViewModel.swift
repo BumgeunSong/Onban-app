@@ -64,7 +64,9 @@ struct MainCollectionViewModel {
         guard let categoryRequest = CategoryRequest(from: type) else {
             return
         }
-
+        
+        
+        
         categoryRequest.execute { categoryResponse in
             guard let productCellVMs = categoryResponse?.body.compactMap({ productSummary in
                 ProductCellViewModel(product: productSummary)

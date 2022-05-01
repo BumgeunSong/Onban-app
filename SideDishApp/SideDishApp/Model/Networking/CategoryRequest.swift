@@ -9,7 +9,6 @@ import Foundation
 import Alamofire
 
 struct CategoryRequest: APIRequestable {
-
     typealias Response = CategoryResponse
     var url: URL
     var method: HTTPMethod = .get
@@ -22,3 +21,4 @@ struct CategoryRequest: APIRequestable {
         self.url = url
     }
 }
+
