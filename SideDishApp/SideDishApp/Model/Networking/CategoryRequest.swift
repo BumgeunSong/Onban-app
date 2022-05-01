@@ -21,4 +21,3 @@ struct CategoryRequest: APIRequestable {
         self.url = url
     }
 }
-

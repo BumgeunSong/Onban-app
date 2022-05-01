@@ -30,7 +30,5 @@ struct ImageRequest: APIRequestable {
         guard let url = components.url else { return nil }
         self.url = url
     }
-    
-    
-}
 
+}
