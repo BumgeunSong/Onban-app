@@ -28,6 +28,65 @@
 <details>
    <summary><h3>1. ViewController - ViewModel 역할 분리</h3></summary>
    
+<ul><li>고민
+<ul><li>	MVC 패턴을 적용했을 때 ViewController가 과도하게 복잡해지는 것을 방지해보고 싶다는 마음에서 ViewModel을 사용해보기로 결정.
+<li>	 테스트 가능한 부분을 더 넓혀보고 싶었음.
+</li>
+</li></ul>
+</li></ul>
+<p>  </p>
+<ul><li> 배운 점
+<ul><li>	 MVVM의 2가지 특징
+<ul><li>		 1. 뷰의 상태를 추상화: 뷰 모델
+<ul><li>			View는 시각적인 요소로만 구성이 되어있다. View에서는 레이아웃, 애니메이션, UI 컴포넌트 생성만 한다.
+</li><li>			ViewModel은 View의 canonical한 상태를 나타낸다. View가 가져야할 ‘상태’의 기준이 된다. (Canonical Representation)
+</li></ul></li></ul></li><li>		2. 바인딩
+<ul><li>			ViewModel은 자기 자신이 가지는 상태를 UI 컴포넌트에 바인딩할 수 있도록 인터페이스를 제공한다.
+<ul><li>			‘바인딩’이라는 테크닉을 사용해서, UI와 ViewModel을 연결한다.
+</li><li>			우리는 View를 조작하지 않고, 그저 View Model의 비즈니스 로직을 조작하면, ViewModel의 상태가 바뀌거, 알아서 View도 업데이트된다.
+</li><li>			뷰의 구현 로직을 몰라도 프레젠테이션 로직을 테스트할 수 있다.
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+
+<ul><li>	  MVVM의 단점
+<ul><li>		  규모가 작은 앱에서는 과도하게 복잡하다. 더 많은 기능이 추가되고 유지보수가 중요해진다는 가정 하에 사용할 것 같다.
+</li></ul></li><li>	  MVC != Massive View Controller
+<ul><li>		  확실히 ViewModel을 쓰면 View Controller의 책임을 줄이는데 도움이 된다.
+</li><li>		  하지만 반드시 MVVM을 써야하는가? MVVM을 쓰면 Massive View Controller가 다 해결되는가? 그건 아니다.
+</li></ul></li><li>	  MVVM도 엄청 두꺼워질 수 있다.
+<ul><li>		  단일 책임 원칙을 제대로 고려하지 않으면 거대한 ViewModel을 만드는 것도 얼마든지 가능하다.
+</li><li>		  실제로 이번 프로젝트에서 같은 스크린에 등장하지만, 서로 책임이 다른 주문VM과 디테일정보VM은 분리할 수 있었다.
+</li><li>		  VC가 지나치게 두꺼운 이유는 모델의 역할을 컨트롤러에 주기 때문일 수도 있다.
+</li><li>		  비즈니스 로직은 여전히 VM이 아닌 모델이 다뤄야 한다. (비즈니스 로직과 아닌 것의 차이?)
+</li></ul></li><li>	  MVC도 충분히 얇아질 수 있다.
+<ul><li>		  ViewController를 여러개로 쪼개고 조합한다.
+<ul><li>			  예를 들어, 헤더와 푸터를 별도의 뷰 컨트롤러로 분리한다든지.
+</li><li>			  여러개의 뷰 컨트롤러를 포함한 Container ViewController를 만든다.
+</li></ul></li><li>		  DataSource를 별도의 객체로 분리한다.
+<ul><li>			  테이블 뷰, 컬렉션 뷰의 데이터 소스를 별도의 객체로 분리할 수 있다.
+</li></ul></li></ul></li><li>		ViewController간 Routing 로직을 분리한다.
+<ul><li>		    VC 간 이동과 데이터를 전달하는 로직을 따로 분리한다. 
+</li><li>		    코디네이터라는 별도의 역할을 두기도 한다.
+</li></ul></li><li>	    뷰 안에 프레젠테이션 로직을 분산시킨다.
+<ul><li>		    뷰를 좀더 똑똑하게 만드는 방법이다.
+</li></ul></li><li>	    MVVM의 진짜 장점
+<ul><li>		    View에 대한 의존성이 전혀 없다는 것이다.
+</li><li>		    테스터블
+<ul><li>			    아주 쉽게 테스트를 할 수 있다. 
+<ul><li>			    로직을 많이 바꿔도 테스트가 있기 때문에 안심할 수 있다.
+</li></ul></li></ul></li><li>		    의존성을 한쪽 방향으로 일치시킬 수 있다. 
+<ul><li>			    Observer pattern을 통해서 약하게 결합하기 때문이다. Clean Architecture와 궁합이 매우 좋다.
+<ul><li>			    GUI 뿐만 아니라, 다른 Layer도 이렇게 의존성을 모두 Domain 로직으로만 향하게 해두면, 데이터의 흐름과 역할 분리가 매우 깔끔해진다. → Clean Architecture
+</li><li>			    VC만 썼을 때에는 어떤 경우에는 View를 직접 조작하고, 어떤 경우에는 Model에서 알림을 받는 등. 의존하는 방향이 달라서 헷갈린다.
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+
+
+   
 </details>
 <details>
    <summary><h3>2. 커스텀 Observer 패턴 구현</h3></summary>
