@@ -164,10 +164,108 @@ final class Observable <T> {
 <details>
    <summary><h3>4. 재사용가능한 네트워킹 모듈 설계</h3></summary>
    
-</details>
-<details>
-   <summary><h3>5. 협업을 위한 PR, 이슈, 리뷰 규칙</h3></summary>
    
+### 의사결정
+- 요청해야할 리소스나 디코딩 방식이 추가될 때 기존 코드를 수정하지 않고 추가할 수 있도록 protocol 및 extension을 사용해서 추상화했다.
+
+### 결정한 이유
+- 카테고리 요청, 이미지 요청, 제품 상세 요청 3가지 요청이 있는 상황이다.
+- 이때 각각의 base URL, path, decoding type이 모두 다르다.
+- 처음에는 매번 메서드를 따로 작성하여 구현했는데, 이것을 공통점만 추상화해서 OCD를 지키도록 만들고 싶었다.
+
+**APIRequestable 프로토콜 선언**
+- 원하는 데이터를 요청하고, 응답 데이터를 디코딩하기 위한 정보를 가지고 있어야 함.
+
+```swift
+import Foundation
+import Alamofire
+
+protocol APIRequestable {
+    associatedtype Response
+
+    var url: URL { get }
+    var method: HTTPMethod { get }
+    var headers: [String: String] { get }
+    var queryItems: [String: String] { get }
+
+    func decode(_ data: Data) -> Response?
+}
+
+```
+
+**Protocol Extension을 활용한 공통 부분 Default 제공**
+
+```swift
+extension APIRequestable {
+    // Header, queryItem이 없을 경우 구현하지 않아도 되도록 Default 제공
+    var headers: [String: String] { [:] }
+    var queryItems: [String: String] { [:] }
+
+    // Request 생성 로직은 모든 구체 타입에서 동일하므로 default 제공
+    func buildRequest() -> DataRequest {
+        return AF.request(self.url,
+                          method: self.method,
+                          parameters: self.queryItems,
+                          headers: HTTPHeaders(self.headers)
+        )
+    }
+}
+```
+
+```swift
+
+extension APIRequestable {
+    // execute 로직은 현재 모든 구체 타입에서 동일하므로 default로 구현
+    func execute(completion: @escaping (Response?) -> Void) {
+        self.buildRequest()
+            .validate()
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    return completion(decode(data))
+                case .failure(let error):
+                    SystemLog.fault(error.localizedDescription)
+                    return completion(nil)
+                }
+            }
+    }
+}
+```
+
+**Type 조건을 활용한 Extension**
+
+‘Associated type인 Response를 Decodable로 지정한 구체 타입’에만 decode의 default가 주어짐.
+
+```swift
+extension APIRequestable where Response: Decodable {
+    // Decoding 로직은 Response type이 Decodable한지, 그냥 Binary Data인지에 따라 달라짐.
+    // type constraint를 사용해서 default를 다르게 구현
+    func decode(_ data: Data) -> Response? {
+        do {
+            return try JSONDecoder().decode(Response.self, from: data)
+        } catch {
+            SystemLog.fault(error.localizedDescription)
+            return nil
+        }
+    }
+}
+
+```
+
+‘Associated type인 Response가 Data인 경우’ decode()는 data를 그대로 return.
+
+```swift
+extension APIRequestable where Response == Data {
+    func decode(_ data: Data) -> Response? {
+        return data
+    }
+}
+```
+
+### 배운 점
+- 프로토콜 익스텐션의 강력함. Associated type과 type constraint를 써서 모든 중복 구현을 추상화할 수 있다 👍
+- Requestable 타입을 따르는 mock 객체를 바꿔치기하면 테스트가 편리해진다.
+
 </details>
 
 ## Team Rules
