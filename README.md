@@ -139,7 +139,27 @@ final class Observable <T> {
 </details>
 <details>
    <summary><h3>3. Collection View Section의 독립적인 로딩과, 이미지 비동기 로딩</h3></summary>
-   
+   <ul><li>의사결정
+<ul><li>	API가 음식 전체가 아닌, 섹션별로 나누어 조회하도록 되어있기 때문에, 각각 비동기로 요청하도록 설계.
+</li><li>	이미지는 다운로드가 오래 걸릴 수 있으므로 별도 요청하도록 설계.
+</li></ul></li><li>문제 1. 데이터 도착 완료 시점
+<ul><li>	콜렉션 뷰를 리로드하기 위해 데이터가 모두 도착했는지 알아야했음.
+</li><li>	DispatchGroup을 사용해 해결.
+</li></ul></li><li>문제 2. 콜렉션 뷰 섹션별 부분 리로드
+<ul><li>	콜렉션 뷰 전체를 리로드하지 않고 응답이 도착하는대로 섹션만 업데이트하도록 개선.
+</li><li>	reloadSection()을 사용해 해결
+</li></ul></li><li>문제 3. 밀림 현상
+<ul><li>	헤더가 먼저 보이고 시간차를 두고 셀이 로딩되면서 헤더가 밀려나는 애니메이션 현상.
+</li><li>	PlaceHolder Cell을 셋팅해서 해결
+</li></ul></li><li>문제 4. Datasource와 View의 불일치 문제
+<ul><li>	현재 셀 갯수와 데이터 소스 갯수가 다르다는 지속적인 에러 발생.
+</li><li>	며칠 동안 삽질을 하면서 많은 가설을 세웠다 폐기함.
+</li><li>	Alamofire가 응답 처리를 메인 스레드에서 하고 있어서 생긴 문제로 파악후 해결.
+</li></ul>
+</li></ul>
+
+<p>👉 참고 링크: <a href="https://velog.io/@eddy_song/collection-view-reload">Collection View 비동기 로딩 에러 해결하기</a></p>
+
 </details>
 <details>
    <summary><h3>4. 재사용가능한 네트워킹 모듈 설계</h3></summary>
