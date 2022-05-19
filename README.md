@@ -91,6 +91,51 @@
 <details>
    <summary><h3>2. 커스텀 Observer 패턴 구현</h3></summary>
    
+<ul><li><b>의사결정</b>
+<ul><li>	Observable class를 직접 선언해서 viewModel에 필요한 데이터 바인딩을 구현
+</li></ul></li><li><b>결정한 이유</b>
+<ul><li>	KVO도 있지만 class를 써야하고 과도하게 복잡해보였음.
+</li><li>	FRP도 있지만 아직 잘 모름.
+</li></ul>
+</li></ul>
+
+   ```swift
+final class Observable <T> {
+
+    typealias Listener = (T?) -> Void
+
+    var listener: Listener?
+
+    var value: T? {
+        didSet {
+            listener?(value)
+        }
+    }
+
+    init(_ value: T? = nil) {
+        self.value = value
+    }
+
+    func bind(listener: Listener?) {
+        self.listener = listener
+    }
+}
+ ```  
+<ul><li><b>배운 점</b>
+<ul><li>	Reference 타입이 필요한 경우: 변경가능한 값의 관찰
+<ul><li>		<b>왜 Observable은 struct가 아니라 class여야할까?</b> 🔗  <a href="https://github.com/codesquad-members-2022/sidedish/pull/104#discussion_r857087471">질문</a> 
+</li><li>		특정한 데이터의 값 변경을 <b>지속적으로 관찰하려면 해당 데이터가 '식별가능'해야하고</b>, 값이 바뀌었다고 해서 새로운 인스턴스가 되어서는 안됨. 따라서 '고유성'을 가지는 레퍼런스 타입이 적합.
+</li><li>		(예전에 Notification Center에서 특정 객체를 관찰할 때도 똑같은 현상 발생)
+</li></ul></li><li>	명령-쿼리의 분리
+<ul><li>		Bind는 상태를 변경하는 명령임.
+</li><li>		Bind와 동시에 값을 Return하면 디버깅을 하기가 어려워서 한참 동안 고생했음.
+</li><li>		쿼리는 별도의 오퍼레이션으로 분리해야 예측가능한 코드를 만들 수 있음.
+</li></ul>
+</li></ul>
+</li></ul>
+
+
+
 </details>
 <details>
    <summary><h3>3. Collection View Section의 독립적인 로딩과, 이미지 비동기 로딩</h3></summary>
