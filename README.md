@@ -49,24 +49,32 @@
 ## Team Rules
 <details>
    <summary><h3>Branch</h3></summary>
-   - `upstream/team-18`: 코드 리뷰 PR
-- `origin/dev`: 팀 최종 브랜치
-- `origin/feat-eddy`, `origin/feat-kai`: 작업용 브랜치
+   <ul>
+      <li>`upstream/team-18`: 코드 리뷰 PR</li>
+      <li>`origin/dev`: 팀 최종 브랜치</li>
+      <li>`origin/feat-eddy`, `origin/feat-kai`: 작업용 브랜치</li>
+   </ul>
 </details>
 <details>
    <summary><h3>Pull Request</h3></summary>
-   - feat에 push한 후, dev로 PR 후 팀원끼리 리뷰. 
-- PR 시 github action에서 자동 build & test 통과해야만 merge 가능.
-- 코드 리뷰 시 dev에서 team-18로 PR
+      <ul>
+      <li>feat에 push한 후, dev로 PR 후 팀원끼리 리뷰. </li>
+      <li>PR 시 github action에서 자동 build & test 통과해야만 merge 가능.</li>
+      <li>코드 리뷰 시 dev에서 team-18로 PR</li>
+   </ul>
 </details>
 <details>
    <summary><h3>Commit</h3></summary>
-   - Commit에 Issue number 표기. ex. `[#4] Fix: something` 
+   <ul>
+      <li>Commit에 Issue number 표기. ex. `[#4] Fix: something`  </li>
+   </ul>
 </details>
 <details>
    <summary><h3>Issue</h3></summary>
-   - 기능 추가 시 Issue에 추가 후 넘버링
-   - <strong>1분 이상</strong> 해결 못하는 에러 발생 시 Issue에 추가 후 공유
+   <ul>
+      <li>기능 추가 시 Issue에 추가 후 넘버링</li>
+      <li><strong>1분 이상</strong> 해결 못하는 에러 발생 시 Issue에 추가 후 공유</li>
+   </ul>
 </details>
 
 
